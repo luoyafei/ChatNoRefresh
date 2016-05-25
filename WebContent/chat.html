@@ -1,10 +1,143 @@
 <!DOCTYPE html>
-<html>
+<html dir="ltr" class="uk-height-1-1 uk-notouch" lang="en-gb">
 <head>
-<meta charset="UTF-8">
-<title>聊天室</title>
-</head>
-<body>
-	
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>聊天室</title>
+        <link rel="stylesheet" href="assets/uikit/uikit.css">
+        <link rel="stylesheet" href="assets/uikit/slideshow.css">
+        <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css" />
+        <script src="assets/uikit/jquery.js"></script>
+        <script src="assets/uikit/uikit.js"></script>
+        <script src="assets/uikit/slideshow.js"></script>
+        <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    </head>
+
+    <body class="uk-height-1-1">
+         
+         
+         <!-- 这是用来触发抽屉式边栏的按钮 -->
+		<button class="uk-button" data-uk-offcanvas="{target:'#my-id'}">查看所有人的信息</button>
+		<a class="uk-button" href="/ChatNoRefresh/SignOut">注销登陆</a>
+		
+		<!-- 这是抽屉式边栏 -->
+		<div id="my-id" class="uk-offcanvas">
+		    <div class="uk-offcanvas-bar">
+		        <div class="uk-panel uk-container" style="text-align: center;">
+					<ul class="uk-list userItemUL">
+                    </ul>
+				</div>
+		    </div>
+		</div>
+		
+		<div class="uk-panel uk-panel-box uk-width-medium-1-1 constrain">
+            <article class="uk-comment article001" style="display: none;">
+		        <header class="uk-comment-header">
+		            <img class="uk-comment-avatar uk-border-rounded" src="" alt="" style="width: 50px;height: 50px;">
+		            <h4 class="uk-comment-title" style="color: black;"></h4>
+		            <div class="uk-comment-meta">
+		            	<span class="uk-h4"></span>
+		            </div>
+		        </header>
+		    </article>
+        </div>
+		<textarea class="form-control" rows="3" id="content"></textarea>
+		<button type="button" class="btn btn-default" style="float: right;" id="send">发送</button>
+        <script type="text/javascript">
+        	$(document).ready(function() {
+        		
+        		$("#send").bind('click', function() {
+        			if($("#content").val().trim() != "") {
+        				$.post('/ChatNoRefresh/SaveChatContent', {
+        					content : $("#content").val().trim()
+        				}, function(data, textStatus) {
+        					if(textStatus == "success") {
+        						if(data.myjson.register != true) {
+        							window.location.href = "/ChatNoRefresh/login.html";
+        						} else {
+        							if(data.myjson.status == 0) {
+        								alert("发送失败");
+        							} else {
+        								$("#content").val("");
+        								$("#content").focus();
+        							}
+        						}
+        					}
+        				}, 'json');
+        			}
+        		});
+        		setInterval(function() {
+        			getMessage();
+        		}, 1000);
+        		
+        		function getMessage() {
+        			$.post('/ChatNoRefresh/FetchMessage', {}, function(data, textStatus) {
+    					if(textStatus == "success") {
+    						if(data.mjb.register != true) {
+    							window.location.href = "/ChatNoRefresh/login.html";
+    						} else {
+	    						if(data.mjb.status == "0") {
+	    							var countItems = data.chats.length;
+	    							if(countItems > 10)
+	    								countItems = 5;
+	    							
+	    							for(var i = 0; i < countItems; i++) {
+	    								if(data.chats[i].userId == data.user.userId) {
+	    									var $art = $(".article001").clone();
+	        								$art.attr("class", "uk-badge uk-badge-success");
+	        								$art.attr("style", "display: block;color:black;");
+	        								$art.find("img").attr("src", data.users[i].userPicture);
+	        								$art.find("h4").text(data.users[i].userName);
+	        								$art.find("span").text(data.chats[i].chatContent);
+	        								$art.appendTo(".constrain");
+	    								} else {
+	    									var $art = $(".article001").clone();
+	        								$art.attr("class", "uk-badge uk-badge-danger");
+	        								$art.attr("style", "display: block;");
+	        								$art.find("img").attr("src", data.users[i].userPicture);
+	        								$art.find("h4").text(data.users[i].userName);
+	        								$art.find("span").text(data.chats[i].chatContent);
+	        								$art.appendTo(".constrain");
+	    								}
+	    							}
+	    							$.post('/ChatNoRefresh/UpdateUserReadCount', {
+	    								count : data.chats.length
+	    							}, function(data, textStatus){}, 'json');
+	    						}
+    						}
+    					}
+    				}, 'json');
+        		}
+        		
+        		setInterval(function() {
+        			getOnlineUsers();
+        		}, 1000);
+        		function getOnlineUsers() {
+        			$.post('/ChatNoRefresh/GetOnlineUsers', {}, function(data, textStatus){
+        				if($(".userItemOk").length != 0) {
+        					$(".userItemUL").empty();
+        				}
+						for(var i = 0; i < data.onlineUsers.length; i++) {
+							
+							var $online= $(".userItem").clone();
+							$online.attr("class", "userItemOk");
+							$online.attr("style", "display: inline;");
+							$online.find("img").attr("src", data.onlineUsers[i].userPicture);
+							$online.find("span").text("昵称："+data.onlineUsers[i].userName);
+							$online.appendTo($(".userItemUL"));
+						}
+					}, 'json');
+        		}
+        		
+        	});
+        </script>
+        
+        <li class="userItem" style="display: none;">
+			<div>
+				<img class="uk-border-circle" src="" alt="" style="width: 50px;height: 50px;" />
+				<span></span>
+			</div>
+		</li>
 </body>
 </html>

@@ -13,10 +13,5 @@ public interface UserService {
 	public User getUserInId(Integer userId);
 	public User getUserInName(String userName);
 	
-	/**
-	 * 通过用户名来验证该用户是否在数据库中存在
-	 * @param String userName 输入用户名
-	 * @return boolean true:存在；false:不存在；
-	 * */
 	public boolean valdateUserName(String userName);
 }

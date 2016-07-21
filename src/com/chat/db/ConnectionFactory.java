@@ -9,7 +9,7 @@ import java.sql.Statement;
 
 public class ConnectionFactory {
 	private final static String className = "com.mysql.jdbc.Driver";
-	private final static String url = "jdbc:mysql://localhost:3305/chatNoRefresh?user=root&password=root";
+	private final static String url = "jdbc:mysql://localhost:3306/chatNoRefresh?user=root&password=root";
 	public static Connection getConnection() {
 		Connection conn = null;
 		try {

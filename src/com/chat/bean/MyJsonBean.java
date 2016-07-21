@@ -1,12 +1,12 @@
 package com.chat.bean;
 
 public class MyJsonBean {
-	private Integer status = -1;
+	private int status = -1;
 	private boolean isRegister = false;
-	public Integer getStatus() {
+	public int getStatus() {
 		return status;
 	}
-	public void setStatus(Integer status) {
+	public void setStatus(int status) {
 		this.status = status;
 	}
 	public boolean isRegister() {

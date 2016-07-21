@@ -50,19 +50,6 @@ public class MyFilter implements Filter {
 		HttpServletRequest req = (HttpServletRequest)request;
 		HttpServletResponse resp = (HttpServletResponse)response;
 		chain.doFilter(req, resp);
-		/*	
-		HttpSession session = req.getSession();
-		User user = (User)session.getAttribute("user");
-		if(user != null) {
-//System.out.println(user.getUserName());
-			ServletContext sc = fc.getServletContext();
-			@SuppressWarnings("unchecked")
-			Set<User> onlineUsers = (Set<User>)sc.getAttribute("onlineUsers");
-			onlineUsers.add(user);	
-			sc.setAttribute("onlineUsers", onlineUsers);*/
-			/*System.out.println("###############start#################");
-			System.out.println(onlineUsers.size());
-			System.out.println("###############end#################");*/
 	}
 
 	/**

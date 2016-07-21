@@ -61,7 +61,7 @@ public class FetchMessage extends HttpServlet {
 		
 		Integer count = ServiceFactory.createChatService().getAllChatCounts();
 		Integer notread = user.getReadCount();
-		List<Chat> chats = ServiceFactory.createChatService().getAllChats(0, (count-notread)>0?(count-notread):0);
+		List<Chat> chats = ServiceFactory.createChatService().getAllChats(0, (count-notread)==1?1:0);
 		List<User> users = new ArrayList<User>();
 		if(chats.size() > 0) {
 			status = 0;
@@ -70,6 +70,11 @@ public class FetchMessage extends HttpServlet {
 				users.add(u);
 			}
 		}
+		
+		user.setReadCount(count);
+		boolean flag = ServiceFactory.createUserService().updateUser(user);//将用户的未读信息就行更新
+		if(!flag)
+			System.out.println("用户未读消息更新失败");
 		
 		mjb.setStatus(status);
 		jb.accumulate("mjb", mjb);

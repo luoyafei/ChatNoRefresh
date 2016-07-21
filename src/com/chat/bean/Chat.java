@@ -15,20 +15,20 @@ public class Chat {
 		+-------------+----------+------+-----+---------+----------------+
 	 * */
 	
-	private Integer chatId = 0;
-	private Integer userId = 0;
+	private int chatId = 0;
+	private int userId = 0;
 	private String chatContent = "";
 	private Timestamp sendDate = null;
-	public Integer getChatId() {
+	public int getChatId() {
 		return chatId;
 	}
-	public void setChatId(Integer chatId) {
+	public void setChatId(int chatId) {
 		this.chatId = chatId;
 	}
-	public Integer getUserId() {
+	public int getUserId() {
 		return userId;
 	}
-	public void setUserId(Integer userId) {
+	public void setUserId(int userId) {
 		this.userId = userId;
 	}
 	public String getChatContent() {

@@ -16,10 +16,10 @@ public class User {
 	 * 
 	 * */
 	
-	private Integer userId = 0;
+	private int userId = 0;
 	private String userName = "";
 	private String password = "";
-	private Integer readCount = 0;
+	private int readCount = 0;
 	private String userPicture = "/ChatNoRefresh/assets/img/moren.jpg";
 	public String getUserPicture() {
 		return userPicture;
@@ -27,10 +27,10 @@ public class User {
 	public void setUserPicture(String userPicture) {
 		this.userPicture = userPicture;
 	}
-	public Integer getUserId() {
+	public int getUserId() {
 		return userId;
 	}
-	public void setUserId(Integer userId) {
+	public void setUserId(int userId) {
 		this.userId = userId;
 	}
 	public String getUserName() {
@@ -45,10 +45,10 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public Integer getReadCount() {
+	public int getReadCount() {
 		return readCount;
 	}
-	public void setReadCount(Integer readCount) {
+	public void setReadCount(int readCount) {
 		this.readCount = readCount;
 	}
 	

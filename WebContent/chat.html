@@ -18,18 +18,40 @@
          
          
          <!-- 这是用来触发抽屉式边栏的按钮 -->
-		<button class="uk-button" data-uk-offcanvas="{target:'#my-id'}">查看所有人的信息</button>
+		<button class="uk-button" data-uk-offcanvas="{target:'#my-id'}" id="viewAllUserInfo">查看所有人的信息</button>
 		<a class="uk-button" href="/ChatNoRefresh/SignOut">注销登陆</a>
+		<button class="uk-button" data-uk-offcanvas="{target:'#my-right-id'}" id="viewAllHistoryMessage">查看历史消息</button>
 		
 		<!-- 这是抽屉式边栏 -->
 		<div id="my-id" class="uk-offcanvas">
 		    <div class="uk-offcanvas-bar">
-		        <div class="uk-panel uk-container" style="text-align: center;">
+		        <div class="uk-panel uk-container" style="text-align: left;">
 					<ul class="uk-list userItemUL">
                     </ul>
 				</div>
 		    </div>
 		</div>
+		
+		<!-- 这是右边的抽屉式边栏 -->
+		<div id="my-right-id" class="uk-offcanvas">
+		    <div class="uk-offcanvas-bar uk-offcanvas-bar-flip">
+			    <div class="right-container" id="rightSpan">
+			    	<article class="uk-comment article-right" style="display: none;">
+				        <header class="uk-comment-header">
+				            <img class="uk-comment-avatar uk-border-rounded" src="" alt="" style="width: 50px;height: 50px;">
+				            <h4 class="uk-comment-title" style="color: black;"></h4>
+				            <div class="uk-comment-meta">
+				            	<span class="uk-h4"></span>
+				            </div>
+				        </header>
+				    </article>
+				</div>
+				<div style="position: static;">
+			    	<button id="nextPage" value="0" class="uk-button">下一页</button>
+				</div>
+			</div>
+		</div>
+		
 		
 		<div class="uk-panel uk-panel-box uk-width-medium-1-1 constrain">
             <article class="uk-comment article001" style="display: none;">
@@ -79,9 +101,6 @@
     						} else {
 	    						if(data.mjb.status == "0") {
 	    							var countItems = data.chats.length;
-	    							if(countItems > 10)
-	    								countItems = 5;
-	    							
 	    							for(var i = 0; i < countItems; i++) {
 	    								if(data.chats[i].userId == data.user.userId) {
 	    									var $art = $(".article001").clone();
@@ -101,25 +120,19 @@
 	        								$art.appendTo(".constrain");
 	    								}
 	    							}
-	    							$.post('/ChatNoRefresh/UpdateUserReadCount', {
-	    								count : data.chats.length
-	    							}, function(data, textStatus){}, 'json');
 	    						}
     						}
     					}
     				}, 'json');
         		}
         		
-        		setInterval(function() {
-        			getOnlineUsers();
-        		}, 1000);
-        		function getOnlineUsers() {
+        		$("#viewAllUserInfo").bind('click', function getOnlineUsers() {
         			$.post('/ChatNoRefresh/GetOnlineUsers', {}, function(data, textStatus){
         				if($(".userItemOk").length != 0) {
         					$(".userItemUL").empty();
         				}
+        				
 						for(var i = 0; i < data.onlineUsers.length; i++) {
-							
 							var $online= $(".userItem").clone();
 							$online.attr("class", "userItemOk");
 							$online.attr("style", "display: inline;");
@@ -128,7 +141,87 @@
 							$online.appendTo($(".userItemUL"));
 						}
 					}, 'json');
-        		}
+        		});
+        		
+        		
+        		$("#nextPage").bind("click",function () {
+        			
+        			$.post('/ChatNoRefresh/ReviewHistoryMessage', {
+        				nextPage : $("#nextPage").val()
+        			}, function(data, textStatus) {
+        				if(textStatus == "success") {
+    						if(data.mjb.register != true) {
+    							window.location.href = "/ChatNoRefresh/login.html";
+    						} else {
+	    						if(data.mjb.status == "0") {
+	    							$("#nextPage").val($("#nextPage").val()*1+1);
+	    							
+	    							var countItems = data.chats.length;
+	    							for(var i = 0; i < countItems; i++) {
+	    								if(data.chats[i].userId == data.user.userId) {
+	    									var $art = $(".article-right").clone();
+	        								$art.attr("class", "uk-badge uk-badge-success");
+	        								$art.attr("style", "display: block;color:black;");
+	        								$art.find("img").attr("src", data.users[i].userPicture);
+	        								$art.find("h4").text(data.users[i].userName);
+	        								$art.find("span").text(data.chats[i].chatContent);
+	        								$art.appendTo(".right-container");
+	    								} else {
+	    									var $art = $(".article001").clone();
+	        								$art.attr("class", "uk-badge uk-badge-danger");
+	        								$art.attr("style", "display: block;");
+	        								$art.find("img").attr("src", data.users[i].userPicture);
+	        								$art.find("h4").text(data.users[i].userName);
+	        								$art.find("span").text(data.chats[i].chatContent);
+	        								$art.appendTo(".right-container");
+	    								}
+	    							}
+	    						}
+    						}
+    					}
+        			}, 'json');
+        		});
+        		
+        		
+        		/* 获取历史消息 */
+        		$("#viewAllHistoryMessage").bind('click', function (){
+        			$.post('/ChatNoRefresh/ReviewHistoryMessage', {
+        				nextPage : $("#nextPage").val()*1+1
+        			}, function(data, textStatus) {
+        				
+        				if(textStatus == "success") {
+    						if(data.mjb.register != true) {
+    							window.location.href = "/ChatNoRefresh/login.html";
+    						} else {
+	    						if(data.mjb.status == "0") {
+	    							$("#nextPage").val($("#nextPage").val()*1+1);
+	    							var countItems = data.chats.length;
+	    							for(var i = 0; i < countItems; i++) {
+	    								if(data.chats[i].userId == data.user.userId) {
+	    									var $art = $(".article-right").clone();
+	        								$art.attr("class", "uk-badge uk-badge-success");
+	        								$art.attr("style", "display: block;color:black;");
+	        								$art.find("img").attr("src", data.users[i].userPicture);
+	        								$art.find("h4").text(data.users[i].userName);
+	        								$art.find("span").text(data.chats[i].chatContent);
+	        								$art.appendTo(".uk-offcanvas-bar-flip");
+	    								} else {
+	    									var $art = $(".article001").clone();
+	        								$art.attr("class", "uk-badge uk-badge-danger");
+	        								$art.attr("style", "display: block;");
+	        								$art.find("img").attr("src", data.users[i].userPicture);
+	        								$art.find("h4").text(data.users[i].userName);
+	        								$art.find("span").text(data.chats[i].chatContent);
+	        								$art.appendTo(".uk-offcanvas-bar-flip");
+	    								}
+	    							}
+	    						}
+    						}
+    					}
+        				
+        			}, 'json');
+        		});
+        		
         		
         	});
         </script>
@@ -138,6 +231,7 @@
 				<img class="uk-border-circle" src="" alt="" style="width: 50px;height: 50px;" />
 				<span></span>
 			</div>
+			<br />
 		</li>
 </body>
 </html>

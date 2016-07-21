@@ -3,19 +3,22 @@ use chatnorefresh;
 create table user (
 	userId int primary key auto_increment,
     userName varchar(255) not null,
-    password varchar(255) not null
-);
+    password varchar(255) not null,
+    readCount int default 0,
+    userPicture varchar(255) not null
+)default charset=utf8 engine=innodb;
 create table chat (
     chatId int primary key auto_increment,
     userId int references user(userId),
     chatContent text not null,
     sendDate datetime
-);
+)default charset=utf8 engine=innodb;
 create table headPicture (
     pictureId int primary key auto_increment,
     pictureURL varchar(255) not null,
     useCount int
-);
+)default charset=utf8 engine=innodb;
+
 insert into headPicture values(null, '/ChatNoRefresh/assets/img/moren.jpg', 0);
 insert into headPicture values(null, '/ChatNoRefresh/assets/img/001.jpeg', 0);
 insert into headPicture values(null, '/ChatNoRefresh/assets/img/002.jpg', 0);
